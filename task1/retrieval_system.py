@@ -13,17 +13,17 @@ class SongInfo:
 
 class RetrievalSystem:
     def __init__(
-            self,
-            df: pd.DataFrame,
-            sim_metric: Callable = cosine_similarity,
-            sim_feature: str = "bert_embedding",
-            enable_cache: bool = True
+        self,
+        df: pd.DataFrame,
+        sim_metric: Callable = cosine_similarity,
+        sim_feature: str = "bert",
+        enable_cache: bool = True,
     ):
         self.df = df
         self.sim_metric = sim_metric
         self.sim_feature = sim_feature
 
-        if self.sim_feature not in self.df.columns:
+        if self.sim_feature not in self.df.columns and len(sim_feature) > 0:
             raise ValueError(
                 f"'{self.sim_feature}' not found in the dataframe columns."
             )
@@ -33,9 +33,11 @@ class RetrievalSystem:
         self.all_songs_stacked = np.vstack(self.df[self.sim_feature].values)
 
         self.cache_enabled = enable_cache
-        self.cache = {}
+        if self.cache_enabled:
+            self.cache = {}
+            self.sim_cache = {}
 
-    def _calc_similarity(self, song: pd.DataFrame, n: int = 5) -> pd.DataFrame:
+    def _calc_similarity(self, song: pd.Series, n: int = 5) -> pd.DataFrame:
         """
         Calculate the similarity of the given song with all songs in the dataset.
 
@@ -46,20 +48,24 @@ class RetrievalSystem:
         Returns:
         - DataFrame of top n similar songs.
         """
-        song_vector = song[self.sim_feature]
 
-        # Compute similarity for each song in the dataset, ensuring each song_vec is reshaped to 2D
-        similarity = np.array(
-            [
-                # TODO this sets similarity with self as -1, do we want this?
-                self.sim_metric(song_vector, song_vec) if not np.array_equal(song_vector, song_vec) else -1
-                for song_vec in self.all_songs_stacked
+        if self.cache_enabled and song.name in self.sim_cache:
+            similarity = self.sim_cache[song.name]
+        else:
+            song_vector = song[self.sim_feature]
+            similarity = self.sim_metric(song_vector, self.all_songs_stacked).flatten()
+
+            # set similarity with self to -1
+            self_index = np.where((self.all_songs_stacked == song_vector).all(axis=1))[
+                0
             ]
-        )
+            if self_index.size > 0:
+                similarity[self_index[0]] = -1
+
+            if self.cache_enabled:
+                self.sim_cache[song.name] = similarity
 
         top_n_indices = np.argsort(similarity)[::-1][:n]
-        top_n = self.df.iloc[top_n_indices]
-        # make pandas happy: no in-place modification
         top_n = self.df.iloc[top_n_indices].copy()
         top_n["similarity"] = similarity[top_n_indices]
         return top_n
@@ -128,8 +134,8 @@ class RetrievalSystem:
                 "Invalid query type. Provide either song_id (int/str) or an instance of SongInfo."
             )
 
-        if self.cache_enabled and song['id'] in self.cache:
-            cached_result = self.cache[song['id']]
+        if self.cache_enabled and song["id"] in self.cache:
+            cached_result = self.cache[song["id"]]
             if len(cached_result) >= n:
                 return cached_result.head(n)
 
@@ -137,5 +143,6 @@ class RetrievalSystem:
         # from the assignment, it is not 100% clear what to return --> return all except embeddings
         result = self._remove_embeddings(top_n)
 
-        self.cache[song['id']] = result
+        if self.cache_enabled:
+            self.cache[song["id"]] = result
         return result

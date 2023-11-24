@@ -4,7 +4,10 @@ import os
 
 
 def read(feature, h=0):
-    return pd.read_csv(f"{os.getcwd()}/../data/id_{feature}_mmsr.tsv", delimiter="\t", header=h)
+    file_path = os.path.join(
+        os.path.dirname(os.getcwd()), "data", f"id_{feature}_mmsr.tsv"
+    )
+    return pd.read_csv(file_path, delimiter="\t", header=h)
 
 
 def embed_and_merge(df1, df2, col_name):
