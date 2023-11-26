@@ -2,11 +2,11 @@ import pandas as pd
 import numpy as np
 from tqdm.notebook import tqdm
 from typing import Any, Callable, Dict, Tuple
+from io import StringIO
 
 from task2.dcg import calculate_dcg_2, calculate_idcg_2
 
 DEFAULT_K = 10
-
 
 class Pipeline:
     def __init__(self, config: pd.DataFrame, genres: pd.DataFrame, k=100):
@@ -44,6 +44,16 @@ class Pipeline:
                 col.append(func(self, system, **kwargs))
             self.eval[func.__name__] = col
         return self.eval
+
+    def load_results_csv(self, file_name):
+        loaded = pd.read_csv(file_name)
+        # parse nested dataframe
+        if 'precision_and_recall_interval' in loaded.columns:
+            loaded['precision_and_recall_interval'] = loaded["precision_and_recall_interval"].apply(lambda x: pd.read_csv(StringIO(x), delim_whitespace=True ,header=None, names=["k", "recall", "precision"], skiprows=2))
+        if loaded['metric'].eq(self.eval['metric']).all() and loaded['feature'].eq(self.eval['feature']).all():
+            loaded["rs_object"] = self.eval["rs_object"]
+            self.eval = loaded
+
 
     @staticmethod
     def __create_genre_overlap_matrix(genres_df):
@@ -114,7 +124,7 @@ class Pipeline:
 
         recall_array /= num_queries
         precision_array /= num_queries
-        return pd.DataFrame({"k": k_values, "recall": recall_array, "precision": precision_array}).set_index("k")
+        return pd.DataFrame({"k": k_values, "recall": recall_array, "precision": precision_array}).set_index("k").to_numpy()
 
     def mean_ndcg_at_k(self, system, **kwargs):
         k = kwargs.get("k", DEFAULT_K)
@@ -144,6 +154,31 @@ class Pipeline:
             for r in retrieved.itertuples():
                 result_genres.update(self.id_2_genres[r.id])
         return len(result_genres) / len(all_genres)
+
+    def mean_genre_diversity_at_k(self, system, **kwargs):
+        k = kwargs.get("k", DEFAULT_K)
+        all_genres = set()
+        for g in self.id_2_genres.values():
+            all_genres.update(g)
+        genre_2_index = {g: i for i, g in enumerate(all_genres)}
+
+        rs = system.rs_object
+        results = self.__get_full_results(rs)
+
+        entropy_sum = 0.0
+        for query in rs.df.itertuples():
+            retrieved = results[query.id][:k]
+            distribution = np.zeros(len(all_genres), dtype=float)
+            for r in retrieved.itertuples():
+                genres = self.id_2_genres[r.id]
+                for g in genres:
+                    distribution[genre_2_index[g]] += 1 / len(genres)
+            distribution /= k
+            # https://en.wikipedia.org/wiki/Diversity_index#Shannon_index
+            entropy_per_query = -np.sum(distribution * np.log2(distribution, where=(distribution != 0)))
+            entropy_sum += entropy_per_query
+
+        return entropy_sum / len(rs.df)
 
     def save_to_csv(self, _, **kwargs):
         file_name = kwargs.get("file_name", "task2_pipeline.csv")
