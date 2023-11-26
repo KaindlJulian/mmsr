@@ -49,7 +49,7 @@ class Pipeline:
         loaded = pd.read_csv(file_name)
         # parse nested dataframe
         if 'precision_and_recall_interval' in loaded.columns:
-            loaded['precision_and_recall_interval'] = loaded["precision_and_recall_interval"].apply(lambda x: pd.read_csv(StringIO(x), delim_whitespace=True ,header=None, names=["k", "recall", "precision"], skiprows=2))
+            loaded['precision_and_recall_interval'] = loaded["precision_and_recall_interval"].apply(lambda x: pd.read_csv(StringIO(x), delim_whitespace=True ,header=None, names=["k", "recall", "precision"], skiprows=2).set_index("k"))
         if loaded['metric'].eq(self.eval['metric']).all() and loaded['feature'].eq(self.eval['feature']).all():
             loaded["rs_object"] = self.eval["rs_object"]
             self.eval = loaded
