@@ -1,0 +1,14 @@
+\begin{tabular}{llccccc}
+\toprule
+metric & feature & mean_precision_at_k & mean_recall_at_k & mean_ndcg_at_k & genre_coverage_at_k & mean_genre_diversity_at_k \\
+\midrule
+random & random & 0.443 & 0.001 & 0.132 & 1.000 & NaN \\
+cosine & tf-idf & 0.511 & 0.001 & 0.164 & 0.982 & 4.975 \\
+cosine & bert & 0.557 & 0.002 & 0.196 & 0.957 & 4.846 \\
+dot & word2vec & 0.456 & 0.001 & 0.124 & 0.480 & 4.682 \\
+cosine & mfcc_bow & 0.589 & 0.002 & 0.216 & 0.981 & 4.744 \\
+cosine & blf_spectral & 0.590 & 0.002 & 0.218 & 0.972 & 4.738 \\
+cosine & ivec256 & 0.566 & 0.002 & 0.209 & 0.999 & 4.905 \\
+cosine & musicnn & 0.624 & 0.002 & 0.232 & 0.997 & 4.706 \\
+\bottomrule
+\end{tabular}
