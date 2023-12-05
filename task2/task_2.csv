@@ -1,5 +1,5 @@
 metric,feature,rs_object,mean_precision_at_k,mean_recall_at_k,precision_and_recall_interval,mean_ndcg_at_k,genre_coverage_at_k,mean_genre_diversity_at_k
-random,random,<task1.retrieval_system.RetrievalSystem object at 0x00000137634107C0>,0.4425203090945065,0.0009764949366327,"      recall  precision
+random,random,<task1.retrieval_system.RetrievalSystem object at 0x0000021FAE720C40>,0.4425203090945065,0.0009764949366327,"      recall  precision
 k                      
 95  0.009350   0.445063
 90  0.008860   0.444976
@@ -20,8 +20,8 @@ k
 15  0.001467   0.443597
 10  0.000976   0.442520
 5   0.000494   0.441649
-1   0.000105   0.440757",0.1317094374312426,1.0,
-cosine,tf-idf,<task1.retrieval_system.RetrievalSystem object at 0x000001373FE3B820>,0.5107093322765984,0.0013397371155683,"      recall  precision
+1   0.000105   0.440757",0.1317094374312426,1.0,5.067063744621507
+cosine,tf-idf,<task1.retrieval_system.RetrievalSystem object at 0x0000021FAE720B80>,0.5107093322765984,0.0013397371155683,"      recall  precision
 k                      
 95  0.011958   0.497174
 90  0.011349   0.497579
@@ -42,8 +42,8 @@ k
 15  0.001974   0.508130
 10  0.001340   0.510709
 5   0.000678   0.514821
-1   0.000134   0.523677",0.1637540101605103,0.9820143884892086,4.9745583790943115
-cosine,bert,<task1.retrieval_system.RetrievalSystem object at 0x000001373FE3BD60>,0.5571923915197154,0.0018621437788033,"      recall  precision
+1   0.000134   0.523677",0.1637540101605103,0.9820143884892086,4.974558379094312
+cosine,bert,<task1.retrieval_system.RetrievalSystem object at 0x0000021FAE7201F0>,0.5571923915197154,0.0018621437788033,"      recall  precision
 k                      
 95  0.015197   0.537575
 90  0.014466   0.538082
@@ -65,7 +65,7 @@ k
 10  0.001862   0.557192
 5   0.000967   0.564434
 1   0.000209   0.582029",0.1962647134166015,0.9568345323741008,4.845965547369942
-dot,word2vec,<task1.retrieval_system.RetrievalSystem object at 0x0000013763410670>,0.455934218347535,0.0009325174831855,"      recall  precision
+dot,word2vec,<task1.retrieval_system.RetrievalSystem object at 0x0000021FAE796B80>,0.455934218347535,0.0009325174831855,"      recall  precision
 k                      
 95  0.009999   0.473865
 90  0.009471   0.473166
@@ -87,7 +87,7 @@ k
 10  0.000933   0.455934
 5   0.000421   0.423400
 1   0.000085   0.455815",0.1241599357151576,0.4802158273381295,4.681670219082692
-cosine,mfcc_bow,<task1.retrieval_system.RetrievalSystem object at 0x0000013763410610>,0.5885179314444229,0.0017373843144282,"      recall  precision
+cosine,mfcc_bow,<task1.retrieval_system.RetrievalSystem object at 0x0000021FAE796B50>,0.5885179314444229,0.0017373843144282,"      recall  precision
 k                      
 95  0.014725   0.570664
 90  0.013969   0.571090
@@ -108,8 +108,8 @@ k
 15  0.002534   0.586315
 10  0.001737   0.588518
 5   0.000880   0.594730
-1   0.000210   0.610561",0.2160495487017217,0.9811151079136692,4.743527408164238
-cosine,blf_spectral,<task1.retrieval_system.RetrievalSystem object at 0x0000013763410520>,0.5899346146225475,0.001800423842299,"      recall  precision
+1   0.000210   0.610561",0.2160495487017217,0.9811151079136692,4.743527408164237
+cosine,blf_spectral,<task1.retrieval_system.RetrievalSystem object at 0x0000021FAE796F40>,0.5899346146225475,0.001800423842299,"      recall  precision
 k                      
 95  0.014754   0.567769
 90  0.014037   0.568446
@@ -131,7 +131,7 @@ k
 10  0.001800   0.589935
 5   0.000908   0.594076
 1   0.000206   0.608976",0.2183649412103307,0.9721223021582732,4.737670063457085
-cosine,ivec256,<task1.retrieval_system.RetrievalSystem object at 0x0000013763410400>,0.5655637012086405,0.0017122958146032,"      recall  precision
+cosine,ivec256,<task1.retrieval_system.RetrievalSystem object at 0x0000021FAE796160>,0.5655637012086405,0.0017122958146032,"      recall  precision
 k                      
 95  0.013888   0.533724
 90  0.013187   0.534565
@@ -153,7 +153,7 @@ k
 10  0.001712   0.565564
 5   0.000876   0.571429
 1   0.000224   0.594512",0.208839087183371,0.9991007194244604,4.905103777794026
-cosine,musicnn,<task1.retrieval_system.RetrievalSystem object at 0x00000137633F6340>,0.6235981771349299,0.0019370533234914,"      recall  precision
+cosine,musicnn,<task1.retrieval_system.RetrievalSystem object at 0x0000021FAE7963A0>,0.6235981771349299,0.0019370533234914,"      recall  precision
 k                      
 95  0.017015   0.609471
 90  0.016169   0.609916
