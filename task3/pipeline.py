@@ -182,7 +182,7 @@ class Pipeline:
                 {"k": k_values, "recall": recall_array, "precision": precision_array}
             )
             .set_index("k")
-            .to_numpy()
+            # .to_numpy()
         )
 
     def mean_ndcg_at_k(self, system, **kwargs):
