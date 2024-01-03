@@ -97,7 +97,7 @@ class RetrievalSystem:
         Returns:
             pd.DataFrame: Dataframe without embedding and tf-idf columns
         """
-        return df.loc[:, ~df.columns.str.contains("embedding|tf-idf")].reset_index(
+        return df.loc[:, ~df.columns.str.contains("embedding|tf-idf|resnet|mfcc_bow|blf_spectral|ivec256|musicnn|bert|word2vec|ef_bert_musicnn'")].reset_index(
             drop=True
         )
 

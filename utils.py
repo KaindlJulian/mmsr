@@ -5,7 +5,7 @@ import os
 
 def read(feature, h=0):
     file_path = os.path.join(
-        os.path.dirname(os.getcwd()), "data", f"id_{feature}_mmsr.tsv"
+        ".", "data", f"id_{feature}_mmsr.tsv"
     )
     return pd.read_csv(file_path, delimiter="\t", header=h)
 
