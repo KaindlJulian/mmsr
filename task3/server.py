@@ -2,7 +2,7 @@ from flask import Flask, request
 from flask_restx import Api, Resource, fields
 from pathlib import Path
 import sys
-path_root = Path(__file__).joinpath("..\\..").resolve()
+path_root = Path(__file__).joinpath("..","..").resolve()
 sys.path.append(str(path_root))
 print(sys.path)
 import pandas as pd
