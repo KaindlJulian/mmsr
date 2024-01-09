@@ -43,17 +43,27 @@ class SongSearch(Resource):
         print(result.columns)
         return result.to_json(orient='records')
 
-@api.route('/tfidf')
+@api.route('/<retrieval_system>')
 class SongSearch(Resource):
     @api.expect(song_model)
-    def post(self):
+    def post(self, retrieval_system):
         data = request.get_json()
+        if retrieval_system not in rt_dict:
+            api.abort(404, f"Retrieval system '{retrieval_system}' not found")
 
         sample_song = SongInfo(title=data['title'], artist=data['artist'])
-        result =  rt_dict['tfidf'].retrieve(sample_song)
+        result =  rt_dict[retrieval_system].retrieve(sample_song)
 
         # Convert the result to a JSON-compatible format
         print(result.columns)
+        return result.to_json(orient='records')
+
+@api.route('/allSongs')
+class SongSearch(Resource):
+    def get(self):
+        result = df.loc[:, ~df.columns.str.contains("embedding|tf-idf|resnet|mfcc_bow|blf_spectral|ivec256|musicnn|bert|word2vec|ef_bert_musicnn'")].reset_index(
+            drop=True
+        )
         return result.to_json(orient='records')
 
 if __name__ == '__main__':
@@ -81,5 +91,33 @@ if __name__ == '__main__':
         df=df,
         sim_metric=cosine_similarity,
         sim_feature="tf-idf",
-    )}
+    ), 'bert': RetrievalSystem(
+                df=df,
+                sim_metric=cosine_similarity,
+                sim_feature="bert",
+            ), 'musicnn': RetrievalSystem(
+                df=df,
+                sim_metric=cosine_similarity,
+                sim_feature="musicnn",
+            ), 'resnet': RetrievalSystem(
+                df=df,
+                sim_metric=cosine_similarity,
+                sim_feature="resnet",
+            ), 'ivec256': RetrievalSystem(
+                df=df,
+                sim_metric=cosine_similarity,
+                sim_feature="ivec256",
+            ), 'blf_spectral': RetrievalSystem(
+                df=df,
+                sim_metric=cosine_similarity,
+                sim_feature="blf_spectral",
+            ), 'mfcc_bow': RetrievalSystem(
+                df=df,
+                sim_metric=cosine_similarity,
+                sim_feature="mfcc_bow",
+            ), 'word2vec': RetrievalSystem(
+                df=df,
+                sim_metric=dot_product,
+                sim_feature="word2vec",
+            )}
     app.run(debug=True)
