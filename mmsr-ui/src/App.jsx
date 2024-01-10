@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Autocomplete, TextField, Grid, Button, CircularProgress } from '@mui/material';
 import ResultsTable from './ResultsTable';
+import async from 'async';
 
 export default function App() {
   const [options, setOptions] = useState([]);
@@ -12,15 +13,15 @@ export default function App() {
   const [similarSongs, setSimilarSongs] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/allSongs')
-      .then((res) => {
+    async function getOptions() {
+      return axios.get('http://localhost:5000/allSongs');
+    }
+    async.retry({ times: 50, interval: 2000 }, getOptions, (error, res) => {
+      if (res.status === 200) {
         setLoadingOptions(false);
         setOptions(JSON.parse(res.data));
-      })
-      .catch((err) => {
-        setLoadingOptions(false);
-        console.log(err);
-      });
+      }
+    });
   }, []);
 
   function startSearch() {
@@ -60,8 +61,10 @@ export default function App() {
               disablePortal
               options={options}
               onChange={(e, value) => {
-                setSong(value.song);
-                setArtist(value.artist);
+                if (value != null) {
+                  setSong(value.song);
+                  setArtist(value.artist);
+                }
               }}
               getOptionLabel={(option) => option.song + ' - ' + option.artist}
               sx={{ width: 300, mt: 2 }}
@@ -87,7 +90,7 @@ export default function App() {
           </Button>
         </Grid>
       </Grid>
-      <ResultsTable similarSongs={similarSongs}/>
+      <ResultsTable similarSongs={similarSongs} />
     </>
 
   );
