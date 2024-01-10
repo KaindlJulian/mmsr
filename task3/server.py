@@ -1,5 +1,6 @@
 from flask import Flask, request
 from flask_restx import Api, Resource, fields
+from flask_cors import CORS
 from pathlib import Path
 import sys
 path_root = Path(__file__).joinpath("..","..").resolve()
@@ -18,6 +19,7 @@ from utils import read, embed_and_merge
 from task3.methods_task3 import early_fusion
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
 
 g_variable ="Tstest"
