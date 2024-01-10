@@ -52,7 +52,7 @@ class SongSearch(Resource):
             api.abort(404, f"Retrieval system '{retrieval_system}' not found")
 
         sample_song = SongInfo(title=data['title'], artist=data['artist'])
-        result =  rt_dict[retrieval_system].retrieve(sample_song)
+        result =  rt_dict[retrieval_system].retrieve(sample_song, n=10)
 
         # Convert the result to a JSON-compatible format
         print(result.columns)
