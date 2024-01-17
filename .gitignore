@@ -1,5 +1,4 @@
 /.idea
 /venv
 /data/*
-/**/*.npy
 __pycache__/
