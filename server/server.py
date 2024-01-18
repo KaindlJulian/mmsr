@@ -10,7 +10,6 @@ import pandas as pd
 from functools import wraps
 
 from dataclasses import dataclass
-import numpy as np
 import pandas as pd
 import os
 
@@ -103,10 +102,7 @@ class SongSearch(Resource):
         yt_link = read("url", 0)
         df = df.merge(yt_link, on="id", how="left")
         
-        precomputed_results = read("cached_results", 0, ",")
-        df = df.merge(precomputed_results, on="id", how="left")
-        res = df.drop(["tfidf", "resnet", "ivec256"], axis=1)
-        return res.to_json(orient='records')
+        return df.to_json(orient='records')
 
 if __name__ == '__main__':
 
