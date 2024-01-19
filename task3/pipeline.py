@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import pyarrow.feather as feather
+
 from tqdm.notebook import tqdm
 from typing import Any, Callable, Dict, Tuple
 from io import StringIO
@@ -248,3 +250,28 @@ class Pipeline:
     def save_to_csv(self, _, **kwargs):
         file_name = kwargs.get("file_name", "task3_pipeline.csv")
         self.eval.to_csv(file_name, index=False)
+
+    def resize_to_k_and_save_npy(self, k=10):
+        for system in tqdm(
+                self.eval.itertuples(),
+                total=len(self.eval),
+        ):
+            result = self.__get_full_results(system.rs_object)
+            resized = {}
+            for qId in result:
+                resized[qId] = result[qId].iloc[:k][['id', 'similarity']]
+
+            np.save(f'results/{system.metric}_{system.feature}_results_{k}.npy', resized)
+
+    def resize_to_k_and_save_feather(self, k=10):
+        for system in tqdm(
+                self.eval.itertuples(),
+                total=len(self.eval),
+        ):
+            result = self.__get_full_results(system.rs_object)
+            resized = {}
+            for qId in result:
+                resized[qId] = result[qId].iloc[:k][['id', 'similarity']]
+
+            df = pd.concat(resized, axis=1)
+            feather.write_feather(df, f'results/{system.metric}_{system.feature}_results_{k}.feather')

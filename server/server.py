@@ -10,7 +10,6 @@ import pandas as pd
 from functools import wraps
 
 from dataclasses import dataclass
-import numpy as np
 import pandas as pd
 import os
 
@@ -27,6 +26,12 @@ def read(feature, h=0, delimiter="\t"):
         '.', f"id_{feature}_mmsr.tsv"
     )
     return pd.read_csv(file_path, delimiter=delimiter, header=h)
+
+def read_feather(feature):
+    file_path = os.path.join(
+        '.', f"{feature}.feather"
+    )
+    return pd.read_feather(file_path)
 
 
 app = Flask(__name__)
@@ -70,20 +75,21 @@ class SongSearch(Resource):
         df = df.merge(genres, on="id", how="left")
         yt_link = read("url", 0)
         df = df.merge(yt_link, on="id", how="left")
-        
-        precomputed_results = read("cached_results", 0, ",")
-        df = df.merge(precomputed_results, on="id", how="left")
-        data = request.get_json()
-        
-        related_ids_str = df.loc[df['id'] == data['id'], retrieval_system].values[0]
-        related_ids = list(related_ids_str.split(';'))
-        # Filter the DataFrame to get rows with the related IDs
-        related_songs_df = df[df['id'].isin(related_ids)]
 
+        precomputed_results = read_feather(retrieval_system)
+        
+        song_id = request.json['id']
+        precomputed_results = precomputed_results[song_id]
 
-        # Convert the result to a JSON-compatible format
-        related_songs_df.drop(["tfidf", "resnet", "ivec256"], axis=1, inplace=True)
-        return related_songs_df.to_json(orient='records')
+        precomputed_results
+        if isinstance(precomputed_results, pd.Series):
+            precomputed_results = precomputed_results.reset_index()
+            precomputed_results.columns = ['id', 'similarity']  # Rename columns appropriately
+
+        # Step 2: Merge with df
+        result_df = df.merge(precomputed_results, on='id', how='inner')
+        result_df
+        return result_df.to_json(orient='records')
 
 @api.route('/allSongs')
 class SongSearch(Resource):
@@ -96,10 +102,7 @@ class SongSearch(Resource):
         yt_link = read("url", 0)
         df = df.merge(yt_link, on="id", how="left")
         
-        precomputed_results = read("cached_results", 0, ",")
-        df = df.merge(precomputed_results, on="id", how="left")
-        res = df.drop(["tfidf", "resnet", "ivec256"], axis=1)
-        return res.to_json(orient='records')
+        return df.to_json(orient='records')
 
 if __name__ == '__main__':
 
